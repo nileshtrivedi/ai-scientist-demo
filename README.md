@@ -1,34 +1,17 @@
-[PySD Cookbook](http://pysd-cookbook.readthedocs.org/)
-=============
-## Simple recipes for powerful analysis of system dynamics models
-*by James Houghton*
+## AI Scientist Agent
 
-### Try out in Binder
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/SDXorg/PySD-Cookbook/HEAD)
+This is a fork of [PySD Cookbook](http://pysd-cookbook.readthedocs.org/) but I have added an agent that can perform PySD operations on multiple SD models on arbitrary scientific domains.
 
-This cookbook is intended as a resource for system dynamics practitioners working to use big data to
-improve their modeling practice. I strive to make each recipe short, simple to understand, and transferable,
-so that the script can be copied and adapted to the desired problem.
+This is built using Google's [Agent Development Kit.](https://google.github.io/adk-docs/)
+Copy `scientist-agent/.env.example` to `scientist-agent/.env` and provide your Gemini API key there.
+Run `adk web` from the root directory of this project and access http://localhost:8000/dev-ui?app=scientist-agent for the Agent UI.
 
-Each recipe is structured as follows:
+#### Screenshots:
 
-1. Introduction to the technique and its relevance to System Dynamics
-2. Ingredients necessary to use the technique
- 1. Description of the Demo Model
- 2. Description of the Demo Data
- 3. Notes on the particular third party python libraries in use
-3. Steps necessary to conduct the analysis with code examples
+Listing the models available for a domain:
 
-### How to use this cookbook
-An easily readable, linked version of this cookbook is available on [Read the Docs](http://pysd-cookbook.readthedocs.org/)
+<img width="1674" alt="image" src="https://github.com/user-attachments/assets/b2f44ff6-28c7-428a-9678-4671b9bb4a2c" />
 
-Every recipe in this cookbook is an executable ipython notebook. Because of this, I recommend that you download a copy of the cookbook, and follow along by executing the steps in each notebook as you read, playing with the parameters, etc.
+Running the model and seeing the plot image:
 
-If you want to implement a recipe, you can then make a copy of the notebook you are interested in, and modify it to analyze your own problem with your own data.
-
-To download the cookbook in its entirity, use [this link](https://github.com/SDXorg/PySD-Cookbook/archive/master.zip) or select one of the options in the righthand panel of the github window.
-
-At least PySD 3.0.0 is needed to run these notebooks. However, we recommend using the latest available PySD version ([check also for its requirements](https://pysd.readthedocs.io/en/master/installation.html)).
-
-### Structure of this repository
-As several recipes may use the same models or the same data, I've separated the recipes into a directory called [Analyses](https://github.com/SDXorg/PySD-Cookbook/tree/master/source/analyses) where individual recipes are grouped by category. The [Data](https://github.com/SDXorg/PySD-Cookbook/tree/master/source/data) directory contains all of the data used in the analyses, and in most cases notebooks describing the data, where it came from, and how it is formatted. The [Models](https://github.com/SDXorg/PySD-Cookbook/tree/master/source/models) directory includes the various model files that are used throughout the analyses.
+<img width="1685" alt="image" src="https://github.com/user-attachments/assets/648b7352-239a-4429-bbe0-2807a7523ac6" />

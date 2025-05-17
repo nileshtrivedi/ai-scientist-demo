@@ -16,11 +16,11 @@ def list_models(domain: str) -> dict:
     """Lists all system dynamics models in the given domain.
     
     Args:
-        domain: The domain to list models from. This is a specific directory in the local file system.
+        domain: The domain to list models from. This will be interpreted as a subdirectory of "source/models/" in the local file system.
         example: "Epidemic"
     
     Returns:
-        dict: A dictionary containing the status (success/failure), and files whose value is an array of strings which are paths to model files (either vensim or xmile).
+        dict: A dictionary containing the `status` (success/failure), and `files` whose value is an array of strings which are paths to model files (either vensim or xmile) inside `source/models/<domain>`.
         example: {"status": "success", "files": ["SI.mdl", "SIR.xmile", "SEIR.mdl"]}
     """
     print("Inside list_models.......")
@@ -142,6 +142,12 @@ def base_system_instruction():
   output = model.run()
   ```
   
+  If only some rows are asked for:
+  ```
+  result = model.run()
+  output = result.head(5)
+  ```
+  
   If we wish to see values of only certain variables, we can pass a list of component names with the keyword argument `return_columns`.
   This will change the columns of the returned dataframe such that they contain samples of the requested model components:
   ```
@@ -234,6 +240,41 @@ def base_system_instruction():
   plt.savefig('simulation_results.png', bbox_inches='tight')
   logs += "Plot saved as simulation_results.png"
   ```
+  
+  Phase-portraits can be generate with one dimension for each of the system’s stocks.
+  For example, for a simple pendulum model, you can do:
+  ```
+  # define the range over which to plot
+  angular_position = np.linspace(-1.5*np.pi, 1.5*np.pi, 60)
+  angular_velocity = np.linspace(-2, 2, 20)
+  apv, avv = np.meshgrid(angular_position, angular_velocity) # construct a 2D sample space
+  logs += "Sample space created."
+  
+  # define a helper function which calculates the derivatives for each point in the state space
+  def derivatives(ap, av):
+      ret = model.run(params={'angular_position': ap, 'angular_velocity': av},
+                    return_timestamps=[0,1],
+                    return_columns=['change_in_angular_position','change_in_angular_velocity'])
+
+    return tuple(ret.loc[0].values)
+  
+  # Now we calculate the state space derivatives across our sample space using numpy's vectorize function
+  vderivatives = np.vectorize(derivatives)
+  dapv, davv = vderivatives(apv, avv)
+  logs += "Derivatives calculated."
+  
+  # Now we use matplotlib's quiver function to plot the phase portrait
+  plt.figure(figsize=(18,6))
+  plt.quiver(apv, avv, dapv, davv, color='b', alpha=.75)
+  plt.box('off')
+  plt.xlim(-1.6*np.pi, 1.6*np.pi)
+  plt.xlabel('Radians', fontsize=14)
+  plt.ylabel('Radians/Second', fontsize=14)
+  plt.title('Phase portrait for a simple pendulum', fontsize=16);
+  plt.savefig('phase_portrait.png', bbox_inches='tight')
+  logs += "Phase portrait saved as phase_portrait.png"
+  ```
+  
   Remember, the code_execution tool does not have access to read_png_file or other tools. 
   So you first need to use code_execution to save the plot as an image file, and then use a separate call to invoke the read_png_file tool.
   Do not try to combine multiple tool operations in a single code_execution call.
@@ -241,7 +282,7 @@ def base_system_instruction():
 
 
 root_agent = Agent(
-    model="gemini-2.0-flash",
+    model="gemini-2.5-flash-preview-04-17",
     name="system_dynamics_agent",
     instruction=base_system_instruction(),
     tools=[

@@ -1,10 +1,22 @@
-## AI Scientist Agent
+# AI Scientist Agent
 
-This is a fork of [PySD Cookbook](http://pysd-cookbook.readthedocs.org/) but I have added an agent that can perform PySD operations on multiple SD models on arbitrary scientific domains.
+This is an agent that can run system dynamics models (Vensim or XMILE) using [PySD](https://pysd.readthedocs.io/) and do things like:
 
-This is built using Google's [Agent Development Kit.](https://google.github.io/adk-docs/)
-Copy `scientist-agent/.env.example` to `scientist-agent/.env` and provide your Gemini API key there.
-Run `adk web` from the root directory of this project and access http://localhost:8000/dev-ui?app=scientist-agent for the Agent UI.
+- Perform sensitivity analysis
+- Generate phase-portrait diagrams
+- Design robust policy across multiple theories
+- Design experiments to discriminate between candidate theories
+- And more.
+
+This repo is a fork of [PySD Cookbook](http://pysd-cookbook.readthedocs.org/) which provides many vensim models and analysis recipes.
+
+
+### Run locally
+
+- Run `pip install google-adk pysd matplotlib`
+- Copy `scientist-agent/.env.example` to `scientist-agent/.env` and provide your Gemini API key there.
+- Run `adk web` from the root directory of this project.
+- Access http://localhost:8000/dev-ui?app=scientist-agent for the Agent UI.
 
 #### Screenshots:
 

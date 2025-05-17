@@ -9,65 +9,102 @@ import os
 import pysd
 import pandas as pd
 import numpy as np
+import re
+import pathlib
 import asyncio
-from typing import Dict, Any, Optional
+import logging
+from typing import List, Dict, Any, Optional
 
-def list_models(domain: str) -> dict:
-    """Lists all system dynamics models in the given domain.
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+READ_ALLOWED_DIRECTORIES = ["source/models"]
+WRITE_ALLOWED_DIRECTORIES = ["source/models"]
+
+def read_text_file(path: str) -> Dict[str, Any]:
+    """Read the contents of a text file."""
+    # Only allow reading from allowed directories
+    if not any(path.startswith(allowed_dir) for allowed_dir in READ_ALLOWED_DIRECTORIES):
+        raise ValueError(f"Writing to {path} is not allowed. Allowed directories: {READ_ALLOWED_DIRECTORIES}")
+
+    return {
+        "status": "success",
+        "content": pathlib.Path(path).read_text(),
+        "logs": f"Read {path} successfully."
+    }
+
+
+def write_text_file(path: str, content: str) -> Dict[str, Any]:
+    """Write content to a text file."""
+
+    # Only allow writing to allowed directories
+    if not any(path.startswith(allowed_dir) for allowed_dir in WRITE_ALLOWED_DIRECTORIES):
+        raise ValueError(f"Writing to {path} is not allowed. Allowed directories: {WRITE_ALLOWED_DIRECTORIES}")
+
+    return {
+        "status": "success",
+        "result": pathlib.Path(path).write_text(content),
+        "logs": f"Wrote to {path} successfully."
+    }
+
+
+def list_directory(path: str, recursive: bool = False) -> Dict[str, Any]:
+            """List contents of a directory.
+            
+            Args:
+                path: The directory path to list
+                recursive: If True, recursively list all subdirectories and their contents. Default is False.
+            """
+            entries = []
+            base_path = pathlib.Path(path)
+            
+            if recursive:
+                # Use rglob to recursively list all files and directories
+                for entry in base_path.rglob("*"):
+                    # Skip the base directory itself
+                    if entry == base_path:
+                        continue
+                    entries.append({
+                        "path": str(entry),
+                        "type": "file" if entry.is_file() else "directory",
+                    })
+            else:
+                # Original behavior for non-recursive listing
+                for entry in base_path.iterdir():
+                    entries.append({
+                        "path": str(entry),
+                        "type": "file" if entry.is_file() else "directory",
+                    })
+                    
+            print(f"Path: {path}, Entries: {entries}")
+            
+            return {
+                "status": "success",
+                "entries": entries,
+                "logs": f"Listed contents of {path} successfully."
+            }
+
+
+def list_models(topic: str) -> Dict[str, Any]:
+    """Lists all system dynamics models in the given topic.
     
     Args:
-        domain: The domain to list models from. This will be interpreted as a subdirectory of "source/models/" in the local file system.
+        topic: The topic to list models from. This will be interpreted as a subdirectory of "source/models/" in the local file system.
         example: "Epidemic"
     
     Returns:
-        dict: A dictionary containing the `status` (success/failure), and `files` whose value is an array of strings which are paths to model files (either vensim or xmile) inside `source/models/<domain>`.
-        example: {"status": "success", "files": ["SI.mdl", "SIR.xmile", "SEIR.mdl"]}
+        dict: A dictionary containing the `status` (success/failure), and `files` whose value is an array of strings which are paths to model files (either vensim or xmile) inside `source/models/<topic>`.
+        example: {"status": "success", "entries": ["SI.mdl", "SIR.xmile", "SEIR.mdl"], "logs": "Listed models successfully."}
     """
-    print("Inside list_models.......")
-    model_files = []
-    for root, dirs, files in os.walk("source/models/" + domain):
-        for file in files:
-            if file.endswith(".mdl") or file.endswith(".xmile"):
-                model_files.append(os.path.join(root, file))
+    res = list_directory("source/models/" + topic, recursive=True)
     return {
-        "status": "success",
-        "files": model_files
+        "status": res["status"],
+        "entries": [e for e in res["entries"] if e["type"] == "file" and (e["path"].endswith(".mdl") or e["path"].endswith(".xmile"))],
+        "logs": res["logs"]
     }
-
-def read_model_file(model_path: str) -> dict:
-    """Reads a system dynamics model from the given local path and saves it as an artifact.
-    
-    Args:
-        model_path: The path to the model file.
-    
-    Returns:
-        dict: A dictionary containing the status (success/failure), artifact_name and message.
-    """
-    print("Inside read_model_file.......")
-    with open(model_path, "r") as f:
-        model = f.read()
-        return {
-            "status": "success",
-            "model": model
-        }
-        
-def write_model_file(model_path: str, model: str) -> dict:
-    """Writes a system dynamics model to the given local path.
-    
-    Args:
-        model_path: The path to save the model file.
-        model: The model content to save.
-    
-    Returns:
-        dict: A dictionary containing the status (success/failure) and message.
-    """
-    print("Inside write_model_file.......")
-    with open(model_path, "w") as f:
-        f.write(model)
-        return {
-            "status": "success",
-            "message": "Model saved successfully."
-        }
 
 async def read_png_file(image_path: str, artifact_name: str, tool_context: "ToolContext") -> dict:
     """Reads an image from the given local path and saves it as an artifact.

@@ -1,15 +1,15 @@
 from google.adk.agents.llm_agent import Agent
 from google.adk.tools import load_artifacts
 
-from .tools import list_models, read_text_file, write_text_file, execute_python_code_snippet, read_png_file, execute_shell_command
+from .tools import list_models, read_text_file, write_text_file, execute_python_code_snippet, read_png_file, execute_shell_command, browse
 from .pysd_prompt import pysd_expert_instruction
 from .base_prompt import base_instruction
 
-# cli_expert = Agent(
+# cli_and_browsing_expert = Agent(
 #     model="gemini-2.5-flash-preview-04-17",
-#     name="cli_expert",
+#     name="cli_and_browsing_expert",
 #     instruction=base_instruction(),
-#     tools=[execute_shell_command,]
+#     tools=[execute_shell_command, browse,]
 # )
 
 root_agent = Agent(

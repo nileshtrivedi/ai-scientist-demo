@@ -187,3 +187,35 @@ async def execute_shell_command(command: str, current_working_directory: Optiona
             "returncode": 1,
             "status": "failure"
         }
+
+from browser_use import Agent, Browser, BrowserConfig, BrowserContextConfig
+from langchain_google_genai import ChatGoogleGenerativeAI
+os.environ["ANONYMIZED_TELEMETRY"] = "false"
+
+async def browse(task: str) -> str:
+    """Browse the web with an agent and return the result.
+
+    Args:
+        task: The task to complete.
+    """
+
+    browser_config = BrowserConfig()
+    browser = Browser(config=browser_config)
+    context_config = BrowserContextConfig()
+    browser_context = await browser.new_context(config=context_config)
+
+    agent = Agent(
+        task=task,
+        llm=ChatGoogleGenerativeAI(model="gemini-2.5-flash-preview-04-17", temperature=0, max_retries=2),
+        browser_context=browser_context,
+        message_context=""
+    )
+    history = await agent.run()
+
+    result = {
+        'history_final_result': history.final_result(),
+    }
+
+    await browser_context.close()
+
+    return str(result)

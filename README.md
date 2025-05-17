@@ -13,7 +13,7 @@ This repo is a fork of [PySD Cookbook](http://pysd-cookbook.readthedocs.org/) wh
 
 ### Run locally
 
-- Run `pip install google-adk pysd matplotlib`
+- Run `pip install google-adk pysd matplotlib browser-use langchain-google-genai`
 - Copy `scientist-agent/.env.example` to `scientist-agent/.env` and provide your Gemini API key there.
 - Run `adk web` from the root directory of this project.
 - Access http://localhost:8000/dev-ui?app=scientist-agent for the Agent UI.

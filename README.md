@@ -27,3 +27,11 @@ Listing the models available for a domain:
 Running the model and seeing the plot image:
 
 <img width="1685" alt="image" src="https://github.com/user-attachments/assets/648b7352-239a-4429-bbe0-2807a7523ac6" />
+
+Generating phase portrait chart to see system trajectories in many states at once:
+
+![image](https://github.com/user-attachments/assets/bf7e203d-074c-42f4-bcab-3484f0ee2180)
+
+Vision model can analyze and identify patterns in the generated plots:
+
+![image](https://github.com/user-attachments/assets/65aaf7b4-37f6-4e81-a138-6502a560692a)
